@@ -98,9 +98,11 @@ try{loadV();speechSynthesis.onvoiceschanged=loadV}catch(e){}
 const SYL=/^(?:[bcdfjlmnprstv]?[aeiou]|gua)$/i,_u=[];
 function clr(){document.querySelectorAll('.lit').forEach(e=>e.classList.remove('lit'))}
 function sp(t,s){t=nz(t.toLowerCase());if(SYL.test(t)){return t+'h'}return t}
-function spk(t,rate,el){const u=new SpeechSynthesisUtterance(t);u.lang='es-MX';u.rate=rate;u.pitch=1;u.volume=1;const v=VOICES.length?VOICES[vi%VOICES.length]:null;if(v){u.voice=v;u.lang=v.lang}if(el){u.onstart=()=>el.classList.add('lit');u.onend=u.onerror=()=>el.classList.remove('lit')}_u.push(u);if(_u.length>30)_u.shift();speechSynthesis.speak(u)}
-function say(t,keep,el){try{const go=()=>spk(sp(t),SYL.test(nz(t.toLowerCase()))?.65:.75,el);if(keep)go();else{speechSynthesis.cancel();clr();setTimeout(go,80)}}catch(e){}}
-function sayWord(w,box){try{speechSynthesis.cancel();clr();box=box||document.querySelector('.pw')||document.querySelector('.slots')||document.querySelector('.big');const ss=box?box.querySelectorAll('.sy'):[];setTimeout(()=>{w.p.forEach((p,i)=>spk(sp(p,1),.9,ss[i]));spk(w.p.join(''),.8,box)},80)}catch(e){}}
+const TTS=(()=>{try{return window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform()?Capacitor.registerPlugin('TextToSpeech'):null}catch(e){return null}})();let chain=Promise.resolve(),gen=0;
+function stopSp(){gen++;try{if(TTS)TTS.stop().catch(()=>{});else speechSynthesis.cancel()}catch(e){}}
+function spk(t,rate,el){if(TTS){const g=gen;chain=chain.then(()=>{if(g!==gen)return;if(el)el.classList.add('lit');return TTS.speak({text:t,lang:'es-MX',rate:rate,pitch:1,volume:1,category:'ambient'}).catch(()=>{})}).then(()=>{if(el)el.classList.remove('lit')});return}const u=new SpeechSynthesisUtterance(t);u.lang='es-MX';u.rate=rate;u.pitch=1;u.volume=1;const v=VOICES.length?VOICES[vi%VOICES.length]:null;if(v){u.voice=v;u.lang=v.lang}if(el){u.onstart=()=>el.classList.add('lit');u.onend=u.onerror=()=>el.classList.remove('lit')}_u.push(u);if(_u.length>30)_u.shift();speechSynthesis.speak(u)}
+function say(t,keep,el){try{const go=()=>spk(sp(t),SYL.test(nz(t.toLowerCase()))?.65:.75,el);if(keep)go();else{stopSp();clr();setTimeout(go,80)}}catch(e){}}
+function sayWord(w,box){try{stopSp();clr();box=box||document.querySelector('.pw')||document.querySelector('.slots')||document.querySelector('.big');const ss=box?box.querySelectorAll('.sy'):[];setTimeout(()=>{w.p.forEach((p,i)=>spk(sp(p,1),.9,ss[i]));spk(w.p.join(''),.8,box)},80)}catch(e){}}
 function say_old(t,keep){try{if(!keep)speechSynthesis.cancel();const short=/^(?:[bcdfjlmnprstv]?[aeiou]|gua)$/i.test(t),u=new SpeechSynthesisUtterance(short?t.toLowerCase().replace(/[aeiou](?=[^aeiou]*$)/,c=>({a:'á',e:'é',i:'í',o:'ó',u:'ú'})[c]):t);u.lang='es-MX';u.rate=short?.5:.72;u.pitch=1;u.volume=1;const v=VOICES.length?VOICES[vi%VOICES.length]:null;if(v){u.voice=v;u.lang=v.lang}setTimeout(()=>speechSynthesis.speak(u),keep?0:80)}catch(e){}}
 function nextVoice(){if(VOICES.length){vi=(vi+1)%VOICES.length;const b=$('#vb');if(b)b.textContent='🔊 Voz '+(vi+1)+'/'+VOICES.length}say('Hola, vamos a leer')}
 function sayWord_old(w){try{speechSynthesis.cancel()}catch(e){}w.p.forEach((p,i)=>setTimeout(()=>say(p,1),i*850));setTimeout(()=>say(w.p.join(''),1),w.p.length*850+250)}
@@ -125,7 +127,7 @@ function learn(i){
   <div class=say><span class=owl>🦉</span><div class=bub>Ahora toca las palabras.</div></div>
   <div class=words>${cur.w.map((w,j)=>`<button class=wc onclick="sayWord(cur.w[${j}],this)"><span class=e>${w.e}</span>${col(w)}</button>`).join('')}</div>
   <button class=cta onclick="play()">¡A jugar! 🎮</button>`;
-  setTimeout(()=>{try{speechSynthesis.cancel();cur.s.forEach((s,i)=>spk(sp(s),.65,document.querySelectorAll('.chip')[i]))}catch(e){}},150);
+  setTimeout(()=>{try{stopSp();cur.s.forEach((s,i)=>spk(sp(s),.65,document.querySelectorAll('.chip')[i]))}catch(e){}},150);
 }
 
 // ---------- preguntas aleatorias ----------
