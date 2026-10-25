@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Silabario Aventura</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff3d1;--ink:#2b2350;--card:#fff;--line:#2b2350;--k0:#e8590c;--k1:#1971c2;--k2:#2f9e44;--k3:#9c36b5;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#241c4a;--ink:#fff7e0;--card:#352b66;--line:#0d0a24;--k0:#ffa94d;--k1:#74c0fc;--k2:#8ce99a;--k3:#e599f7}}
+:root[data-theme="dark"]{--bg:#241c4a;--ink:#fff7e0;--card:#352b66;--line:#0d0a24;--k0:#ffa94d;--k1:#74c0fc;--k2:#8ce99a;--k3:#e599f7}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:'Baloo 2','Chalkboard SE','Comic Sans MS',system-ui,sans-serif;font-weight:600;background-image:radial-gradient(circle at 12% 18%,#ffd43b55 0 60px,transparent 61px),radial-gradient(circle at 90% 80%,#74c0fc55 0 90px,transparent 91px);background-attachment:fixed}
+#app{max-width:760px;margin:0 auto;padding:14px 14px 40px}
+button{font:inherit;color:inherit;cursor:pointer;border:3px solid var(--line);background:var(--card);border-radius:22px;box-shadow:0 5px 0 var(--line);transition:transform .08s,box-shadow .08s}
+button:active:not(:disabled){transform:translateY(4px);box-shadow:0 1px 0 var(--line)}
+button:focus-visible{outline:4px solid #4dabf7;outline-offset:3px}
+button:disabled{opacity:.35;cursor:default}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+h1{margin:0;font-size:clamp(1.5rem,6vw,2.3rem);font-weight:800}
+.pill{background:#ffd43b;color:#2b2350;border:3px solid var(--line);border-radius:99px;padding:2px 14px;font-weight:800}
+.sub{margin:6px 0 16px;font-size:1.2rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:16px}
+.lv{background:var(--c);color:#fff;padding:14px 6px 8px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.lv b{font-size:2.3rem;line-height:1.1;text-shadow:0 2px 0 #0003}
+.lv small{font-size:1.1rem;letter-spacing:2px;color:#fff}
+.back{padding:4px 16px;font-size:1.1rem}
+.bar{flex:1;height:18px;border:3px solid var(--line);border-radius:99px;background:var(--card);overflow:hidden}
+.bar i{display:block;height:100%;background:#51cf66;transition:width .4s}
+.say{display:flex;align-items:center;gap:10px;margin:14px 0}
+.owl{font-size:3rem;animation:bob 2.4s ease-in-out infinite}
+.bub{background:var(--card);border:3px solid var(--line);border-radius:20px;padding:8px 16px;font-size:1.25rem;flex:1}
+.chips{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:10px 0 18px}
+.chip{min-width:92px;padding:6px 14px;font-size:2.4rem;font-weight:800;color:var(--k1);display:flex;flex-direction:column;align-items:center;line-height:1.1}
+.chip i{font-style:normal;font-size:1.7rem}
+.words{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.wc{padding:10px;display:flex;flex-direction:column;align-items:center;font-size:2rem;font-weight:800}
+.wc span.e,.big{font-size:4.2rem;line-height:1.1}
+.big{text-align:center;margin:6px 0}
+.cta{display:block;margin:22px auto 0;padding:10px 34px;font-size:1.6rem;font-weight:800;background:#51cf66;color:#143d1b}
+.opts{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:12px}
+.opt{min-width:110px;padding:10px 20px;font-size:2.8rem;font-weight:800;color:var(--k1)}
+.opt.em{font-size:4.4rem;padding:6px 18px}
+.slots{display:flex;gap:10px;justify-content:center;margin:12px 0 18px}
+.slot{width:76px;height:76px;border:4px dashed var(--ink);border-radius:18px;display:grid;place-items:center;font-size:2.2rem;font-weight:800;background:var(--card)}
+.tile{min-width:84px;padding:8px 14px;font-size:2.4rem;font-weight:800;background:#ffe066;color:#2b2350}
+.pw{display:flex;gap:2px;justify-content:center;font-size:3.4rem;font-weight:800;margin:6px 0}
+.shake{animation:sh .35s}
+.stars{font-size:4rem;text-align:center;letter-spacing:6px}
+.end{text-align:center}
+.end h2{font-size:2.2rem;margin:6px 0}
+.row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.row button{padding:8px 22px;font-size:1.3rem;font-weight:800}
+.cf{position:fixed;top:-60px;font-size:2rem;pointer-events:none;animation:fall 1.6s ease-in forwards;z-index:9}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg);opacity:.8}}
+@keyframes sh{25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+@keyframes bob{50%{transform:translateY(-6px) rotate(-4deg)}}
+.sy{display:inline-block;border-radius:12px;padding:0 4px;transition:transform .12s}
+.lit{background:#ffe066!important;color:#2b2350!important;transform:scale(1.1);box-shadow:0 0 0 5px #ffd43b,0 0 24px 8px #ffd43bcc!important}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// Orden del método: vocales y luego consonantes (m, p, s, l, t, n, d, c, b, r, f, j)
+const D=[
+['v','A E I O U','#fa5252',['a','e','i','o','u'],['a-be-ja 🐝','e-le-fan-te 🐘','i-gua-na 🦎','o-so 🐻','u-va 🍇']],
+['m','Mm','#f76707',['ma','me','mi','mo','mu'],['ma-no ✋','mo-no 🐵','ma-pa 🗺️','ma-má 👩']],
+['p','Pp','#e64980',['pa','pe','pi','po','pu'],['pa-to 🦆','pa-pa 🥔','pi-no 🌲','pa-la ⛏️']],
+['s','Ss','#1c7ed6',['sa','se','si','so','su'],['sa-po 🐸','so-pa 🍲','o-so 🐻','me-sa 🪑']],
+['l','Ll','#37b24d',['la','le','li','lo','lu'],['lu-na 🌙','lu-pa 🔍','pe-lo-ta ⚽']],
+['t','Tt','#ae3ec9',['ta','te','ti','to','tu'],['to-ma-te 🍅','te-le 📺','pa-ta 🐾']],
+['n','Nn','#0c8599',['na','ne','ni','no','nu'],['no-ta 🎵','ni-do 🪺','ma-ní 🥜']],
+['d','Dd','#f08c00',['da','de','di','do','du'],['da-do 🎲','de-do 👆','di-no 🦖']],
+['c','Cc','#d6336c',['ca','co','cu'],['ca-sa 🏠','co-co 🥥','ca-ma 🛏️','ca-mi-sa 👕']],
+['b','Bb','#4263eb',['ba','be','bi','bo','bu'],['bo-ca 👄','be-bé 👶','lo-bo 🐺','nu-be ☁️']],
+['r','Rr','#e03131',['ra','re','ri','ro','ru'],['ra-ta 🐀','ro-sa 🌹','pe-ra 🍐']],
+['f','Ff','#2b8a3e',['fa','fe','fi','fo','fu'],['fo-ca 🦭','fo-to 📷','ca-fé ☕']],
+['j','Jj','#7048e8',['ja','je','ji','jo','ju'],['ji-ra-fa 🦒','ca-ja 📦','o-jo 👁️','ro-jo 🔴']]
+];
+const $=s=>document.querySelector(s),app=$('#app');
+const sh=a=>[...a].sort(()=>Math.random()-.5);
+const nz=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+let save={};try{save=JSON.parse(localStorage.getItem('sil')||'{}')}catch(e){}
+const store=()=>{try{localStorage.setItem('sil',JSON.stringify(save))}catch(e){}};
+const LV=D.map(([id,l,c,s,w])=>({id,l,c,s,w:w.map(x=>{const[a,e]=x.split(' ');return{p:a.split('-'),e}})}));
+const cons=LV.slice(1);
+LV.push({id:'x',l:'🌈',c:'#845ef7',s:[...new Set(cons.flatMap(v=>v.s))],w:cons.flatMap(v=>v.w)});
+const allW=LV.slice(0,-1).flatMap(v=>v.w);
+let cur,G,lock;
+
+// ---------- voz y sonido ----------
+let VOICES=[],vi=0;
+function loadV(){try{const sc=v=>(/natural|premium|enhanced|neural/i.test(v.name)?50:0)+(/google|microsoft|paulina|m[oó]nica|sabina|dalia|juan|jorge|diego|ang[eé]lica|luciana|paloma/i.test(v.name)?20:0)+(/^es[-_]MX/i.test(v.lang)?15:/^es[-_](US|419)/i.test(v.lang)?10:0)+(v.localService?0:3);VOICES=speechSynthesis.getVoices().filter(v=>/^es/i.test(v.lang.replace('_','-'))).sort((a,b)=>sc(b)-sc(a))}catch(e){}}
+try{loadV();speechSynthesis.onvoiceschanged=loadV}catch(e){}
+const SYL=/^(?:[bcdfjlmnprstv]?[aeiou]|gua)$/i,_u=[];
+function clr(){document.querySelectorAll('.lit').forEach(e=>e.classList.remove('lit'))}
+function sp(t,s){t=nz(t.toLowerCase());if(SYL.test(t)){return t+'h'}return t}
+function spk(t,rate,el){const u=new SpeechSynthesisUtterance(t);u.lang='es-MX';u.rate=rate;u.pitch=1;u.volume=1;const v=VOICES.length?VOICES[vi%VOICES.length]:null;if(v){u.voice=v;u.lang=v.lang}if(el){u.onstart=()=>el.classList.add('lit');u.onend=u.onerror=()=>el.classList.remove('lit')}_u.push(u);if(_u.length>30)_u.shift();speechSynthesis.speak(u)}
+function say(t,keep,el){try{const go=()=>spk(sp(t),SYL.test(nz(t.toLowerCase()))?.65:.75,el);if(keep)go();else{speechSynthesis.cancel();clr();setTimeout(go,80)}}catch(e){}}
+function sayWord(w,box){try{speechSynthesis.cancel();clr();box=box||document.querySelector('.pw')||document.querySelector('.slots')||document.querySelector('.big');const ss=box?box.querySelectorAll('.sy'):[];setTimeout(()=>{w.p.forEach((p,i)=>spk(sp(p,1),.9,ss[i]));spk(w.p.join(''),.8,box)},80)}catch(e){}}
+function say_old(t,keep){try{if(!keep)speechSynthesis.cancel();const short=/^(?:[bcdfjlmnprstv]?[aeiou]|gua)$/i.test(t),u=new SpeechSynthesisUtterance(short?t.toLowerCase().replace(/[aeiou](?=[^aeiou]*$)/,c=>({a:'á',e:'é',i:'í',o:'ó',u:'ú'})[c]):t);u.lang='es-MX';u.rate=short?.5:.72;u.pitch=1;u.volume=1;const v=VOICES.length?VOICES[vi%VOICES.length]:null;if(v){u.voice=v;u.lang=v.lang}setTimeout(()=>speechSynthesis.speak(u),keep?0:80)}catch(e){}}
+function nextVoice(){if(VOICES.length){vi=(vi+1)%VOICES.length;const b=$('#vb');if(b)b.textContent='🔊 Voz '+(vi+1)+'/'+VOICES.length}say('Hola, vamos a leer')}
+function sayWord_old(w){try{speechSynthesis.cancel()}catch(e){}w.p.forEach((p,i)=>setTimeout(()=>say(p,1),i*850));setTimeout(()=>say(w.p.join(''),1),w.p.length*850+250)}
+let ac;function beep(g){try{ac=ac||new(window.AudioContext||webkitAudioContext)();const t=ac.currentTime;(g?[523,659,784]:[240,200]).forEach((f,i)=>{const o=ac.createOscillator(),n=ac.createGain();o.frequency.value=f;o.type='triangle';o.connect(n);n.connect(ac.destination);n.gain.setValueAtTime(.15,t+i*.1);n.gain.exponentialRampToValueAtTime(.001,t+i*.1+.2);o.start(t+i*.1);o.stop(t+i*.1+.22)})}catch(e){}}
+function confetti(){const E=['⭐','🎉','🎈','✨','🌟','🍭'];for(let i=0;i<22;i++){const s=document.createElement('span');s.className='cf';s.textContent=E[i%E.length];s.style.left=Math.random()*95+'vw';s.style.animationDelay=Math.random()*.4+'s';document.body.appendChild(s);setTimeout(()=>s.remove(),2300)}}
+const col=w=>w.p.map((p,i)=>`<span class=sy style="color:var(--k${i%4})">${p}</span>`).join('');
+const ref=s=>{const w=allW.find(w=>nz(w.p[0])==s);return w?w.e:'⭐'};
+const opts=(a,pool)=>sh([a,...sh([...new Set(pool)].filter(x=>x!==a)).slice(0,2)]);
+
+// ---------- pantallas ----------
+function home(){
+  G=null;const tot=Object.values(save).reduce((a,b)=>a+b,0);
+  app.innerHTML=`<div class=top><h1>🦉 Silabario Aventura</h1><div style="display:flex;gap:8px;align-items:center"><button class=back id=vb onclick="nextVoice()">🔊 Voz</button><span class=pill>⭐ ${tot}</span></div></div>
+  <p class=sub>Toca una letra y ¡vamos a leer!</p>
+  <div class=grid>${LV.map((v,i)=>`<button class=lv style="--c:${v.c}" onclick="learn(${i})" aria-label="Nivel ${v.l}"><b>${v.l}</b><small>${'★'.repeat(save[v.id]||0)}${'☆'.repeat(3-(save[v.id]||0))}</small></button>`).join('')}</div>`;
+}
+function learn(i){
+  cur=LV[i];if(cur.id=='x')return play();
+  app.innerHTML=`<div class=top><button class=back onclick="home()">⬅ Mapa</button><h1 style="color:${cur.c}">${cur.l}</h1></div>
+  <div class=say><span class=owl>🦉</span><div class=bub>Toca cada sílaba para escucharla.</div></div>
+  <div class=chips>${cur.s.map(s=>`<button class=chip onclick="say('${s}',0,this)">${s}<i>${ref(s)}</i></button>`).join('')}</div>
+  <div class=say><span class=owl>🦉</span><div class=bub>Ahora toca las palabras.</div></div>
+  <div class=words>${cur.w.map((w,j)=>`<button class=wc onclick="sayWord(cur.w[${j}],this)"><span class=e>${w.e}</span>${col(w)}</button>`).join('')}</div>
+  <button class=cta onclick="play()">¡A jugar! 🎮</button>`;
+  setTimeout(()=>{try{speechSynthesis.cancel();cur.s.forEach((s,i)=>spk(sp(s),.65,document.querySelectorAll('.chip')[i]))}catch(e){}},150);
+}
+
+// ---------- preguntas aleatorias ----------
+function makeQs(v){
+  const q=[],S=sh(v.s),W=sh(v.w),n=(a,i)=>a[i%a.length];
+  if(v.id=='v'){
+    for(let i=0;i<3;i++)q.push({t:'hear',a:n(S,i)});
+    W.forEach(w=>q.push({t:'vow',w,a:nz(w.p[0])}));
+  }else{
+    for(let i=0;i<2;i++)q.push({t:'hear',a:n(S,i)});
+    for(let i=0;i<2;i++)q.push({t:'first',w:n(W,i),a:nz(n(W,i).p[0])});
+    for(let i=0;i<2;i++)q.push({t:'pic',w:n(W,i+2),a:n(W,i+2).e});
+    for(let i=0;i<2;i++)q.push({t:'build',w:n(W,i+1),pos:0});
+  }
+  return q;
+}
+function play(){G={v:cur,i:0,m:0,q:makeQs(cur)};ask()}
+function ask(){
+  lock=false;if(G.i>=G.q.length)return end();
+  const q=G.q[G.i],v=G.v,bar=`<div class=top><button class=back onclick="home()">✖</button><div class=bar><i style="width:${G.i/G.q.length*100}%"></i></div></div>`;
+  let msg,body;
+  if(q.t=='hear'){
+    q.o=opts(q.a,v.s);msg='¿Qué sílaba escuchaste?';
+    body=`<button class="opt big" style="margin:0 auto;display:block;font-size:3.6rem" onclick="say('${q.a}',0,this)">🔊</button><div class=opts>${q.o.map((o,k)=>`<button class=opt onclick="pick(${k},this)">${o}</button>`).join('')}</div>`;
+  }else if(q.t=='vow'){
+    q.o=opts(q.a,['a','e','i','o','u']);msg='¿Con qué vocal empieza?';
+    body=`<div class=big>${q.w.e}</div><div class=opts>${q.o.map((o,k)=>`<button class=opt onclick="pick(${k},this)">${o}</button>`).join('')}</div>`;
+  }else if(q.t=='first'){
+    q.o=opts(q.a,v.s.map(nz));msg='¿Con qué sílaba empieza?';
+    body=`<button class=big style="display:block;margin:0 auto;padding:4px 26px" onclick="sayWord(G.q[${G.i}].w)">${q.w.e}</button><div class=opts>${q.o.map((o,k)=>`<button class=opt onclick="pick(${k},this)">${o}</button>`).join('')}</div>`;
+  }else if(q.t=='pic'){
+    q.o=opts(q.a,allW.map(w=>w.e));msg='¿Cuál es el dibujo de esta palabra?';
+    body=`<button class=pw style="margin:6px auto;display:flex;background:var(--card);padding:4px 24px" onclick="sayWord(G.q[${G.i}].w)">${col(q.w)}</button><div class=opts>${q.o.map((o,k)=>`<button class="opt em" onclick="pick(${k},this)">${o}</button>`).join('')}</div>`;
+  }else{
+    const extra=sh(v.s).filter(s=>!q.w.p.map(nz).includes(nz(s))).slice(0,2);
+    q.t2=sh([...q.w.p,...extra]);msg='Toca las sílabas en orden para armar la palabra.';
+    body=`<button class=big style="display:block;margin:0 auto;padding:4px 26px" onclick="sayWord(G.q[${G.i}].w)">${q.w.e}</button>
+    <div class=slots>${q.w.p.map((_,i)=>`<span class=slot id=sl${i}></span>`).join('')}</div>
+    <div class=opts>${q.t2.map((o,k)=>`<button class=tile onclick="tile(${k},this)">${o}</button>`).join('')}</div>`;
+  }
+  app.innerHTML=`${bar}<div class=say><span class=owl>🦉</span><div class=bub id=msg>${msg}</div></div>${body}`;
+  window._m=msg;
+  setTimeout(()=>{if(q.t=='hear')say(q.a,0,document.querySelector('.opt.big'));else if(q.w)sayWord(q.w)},350);
+}
+function good(word,sylOrWord){
+  lock=true;beep(1);confetti();
+  $('#msg').textContent=sh(['¡Muy bien!','¡Genial!','¡Excelente!','¡Eso es!','¡Lo lograste!'])[0]+' 🌟';
+  setTimeout(()=>{typeof sylOrWord=='string'?say(sylOrWord,0,window._el):sayWord(sylOrWord)},300);
+  setTimeout(()=>{G.i++;ask()},sylOrWord.p?sylOrWord.p.length*450+1300:1700);
+}
+function bad(el){
+  G.m++;beep(0);el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),400);
+  $('#msg').textContent='Casi… ¡inténtalo otra vez! 💪';
+}
+function pick(k,el){
+  if(lock)return;const q=G.q[G.i];
+  if(q.o[k]===q.a){el.style.background='#b2f2bb';window._el=el;good(q,q.t=='hear'||q.t=='vow'?q.a:q.w)}else bad(el);
+}
+function tile(k,el){
+  if(lock)return;const q=G.q[G.i],exp=q.w.p[q.pos];
+  if(nz(q.t2[k])==nz(exp)){
+    const s=$('#sl'+q.pos);s.innerHTML=`<span style="color:var(--k${q.pos%4})">${exp}</span>`;s.style.borderStyle='solid';
+    el.disabled=true;say(exp,0,s);q.pos++;
+    if(q.pos==q.w.p.length)setTimeout(()=>good(q,q.w),500);
+  }else bad(el);
+}
+function end(){
+  const m=G.m,st=m<=1?3:m<=4?2:1;
+  save[G.v.id]=Math.max(save[G.v.id]||0,st);store();confetti();beep(1);
+  const i=LV.indexOf(G.v);
+  app.innerHTML=`<div class=end><div class=owl style="font-size:5rem">🦉</div><h2>${st==3?'¡Increíble!':st==2?'¡Muy bien!':'¡Buen intento!'}</h2>
+  <div class=stars>${'⭐'.repeat(st)}${'☆'.repeat(3-st)}</div>
+  <div class=row><button onclick="play()">🔄 Jugar otra vez</button>${i<LV.length-1?`<button onclick="learn(${i+1})" style="background:#51cf66;color:#143d1b">Siguiente ➡</button>`:''}<button onclick="home()">🗺️ Mapa</button></div></div>`;
+  setTimeout(()=>say(st==3?'¡Increíble! Ganaste tres estrellas':'¡Muy bien! Sigue practicando'),300);
+}
+home();
+</script>
+</body>
+</html>
