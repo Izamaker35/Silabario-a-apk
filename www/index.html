@@ -98,13 +98,28 @@ try{loadV();speechSynthesis.onvoiceschanged=loadV}catch(e){}
 const SYL=/^(?:[bcdfjlmnprstv]?[aeiou]|gua)$/i,_u=[];
 function clr(){document.querySelectorAll('.lit').forEach(e=>e.classList.remove('lit'))}
 function sp(t,s){t=nz(t.toLowerCase());if(SYL.test(t)){return t+'h'}return t}
-const TTS=(()=>{try{return window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform()?Capacitor.registerPlugin('TextToSpeech'):null}catch(e){return null}})();let chain=Promise.resolve(),gen=0;
-function stopSp(){gen++;try{if(TTS)TTS.stop().catch(()=>{});else speechSynthesis.cancel()}catch(e){}}
-function spk(t,rate,el){if(TTS){const g=gen;chain=chain.then(()=>{if(g!==gen)return;if(el)el.classList.add('lit');return TTS.speak({text:t,lang:'es-MX',rate:rate,pitch:1,volume:1,category:'ambient'}).catch(()=>{})}).then(()=>{if(el)el.classList.remove('lit')});return}const u=new SpeechSynthesisUtterance(t);u.lang='es-MX';u.rate=rate;u.pitch=1;u.volume=1;const v=VOICES.length?VOICES[vi%VOICES.length]:null;if(v){u.voice=v;u.lang=v.lang}if(el){u.onstart=()=>el.classList.add('lit');u.onend=u.onerror=()=>el.classList.remove('lit')}_u.push(u);if(_u.length>30)_u.shift();speechSynthesis.speak(u)}
+const TTS=(()=>{try{const C=window.Capacitor;if(!C)return null;let p=C.Plugins&&C.Plugins.TextToSpeech;if(!p&&typeof C.registerPlugin==='function'&&(window.androidBridge||(C.isNativePlatform&&C.isNativePlatform())||(C.getPlatform&&C.getPlatform()!=='web')))p=C.registerPlugin('TextToSpeech');return p||null}catch(e){return null}})();let chain=Promise.resolve(),gen=0;
+function toast(m){let d=document.getElementById('toast');if(!d){d=document.createElement('div');d.id='toast';d.style.cssText='position:fixed;left:10px;right:10px;bottom:14px;background:#2b2350;color:#fff;border-radius:16px;padding:10px 14px;font-size:1rem;z-index:99;text-align:center';document.body.appendChild(d)}d.textContent=m;d.style.display='block';clearTimeout(d._t);d._t=setTimeout(()=>{d.style.display='none'},7000)}
+let NV=[],NLANG='es-MX';
+async function findLang(){for(const l of ['es-MX','es-US','es-419','es-ES','es']){try{const r=await TTS.isLanguageSupported({lang:l});if(r&&r.supported){NLANG=l;NV=[{lang:l}];return}}catch(e){}}toast('No hay voz en español. Ve a Ajustes > Salida de texto a voz > Servicios de voz de Google e instala español.')}
+function initTTS(n){if(!TTS)return;TTS.getSupportedVoices().then(r=>{const sc=v=>/^es-MX/i.test(v.lang)?3:/^es-(US|419)/i.test(v.lang)?2:1;const seen={};NV=(r.voices||[]).map(v=>({lang:(v.lang||'').replace('_','-')})).filter(v=>/^es/i.test(v.lang)&&!seen[v.lang.toLowerCase()]&&(seen[v.lang.toLowerCase()]=1)).sort((a,b)=>sc(b)-sc(a));if(!NV.length)findLang()}).catch(e=>toast('Voz: '+((e&&e.message)||e)))}
+initTTS(0);
+async function diag(){let d=document.getElementById('dg');if(!d){d=document.createElement('pre');d.id='dg';d.style.cssText='white-space:pre-wrap;background:var(--card);border:3px solid var(--line);border-radius:16px;padding:10px;font-size:.95rem;margin-top:16px';app.appendChild(d)}
+const o=[],L=m=>{o.push(m);d.textContent=o.join('\n')};
+L('Nativo: '+(window.Capacitor&&Capacitor.isNativePlatform?Capacitor.isNativePlatform():'sin Capacitor'));
+L('Capacitor: '+(window.Capacitor?'sí, plataforma '+(Capacitor.getPlatform?Capacitor.getPlatform():'?')+', plugins: '+Object.keys(Capacitor.Plugins||{}).join(', '):'no existe'));
+L('Plugin de voz: '+(TTS?'sí':'no'));
+L('Voz web: '+(typeof speechSynthesis!=='undefined'?'sí':'no'));
+beep(1);L('Pitido enviado. ¿Lo oíste?');
+if(TTS){try{const r=await TTS.getSupportedVoices(),a=r.voices||[],es=a.filter(v=>/^es/i.test(v.lang||''));L('Voces: '+a.length+' en total, '+es.length+' en español'+(es[0]?' ('+es[0].lang+')':''))}catch(e){L('Error al leer voces: '+(e.message||e))}
+try{L('Hablando...');await TTS.speak({text:'Hola, vamos a leer',lang:'es-MX',rate:1,pitch:1,volume:1});L('Voz nativa terminó sin error')}catch(e){L('Error al hablar: '+(e.message||e))}}
+else if(typeof speechSynthesis!=='undefined'){try{L('Voces web: '+speechSynthesis.getVoices().length);say('Hola, vamos a leer')}catch(e){L('Error web: '+e)}}}
+function stopSp(){gen++;chain=Promise.resolve();try{if(TTS)TTS.stop().catch(()=>{});else speechSynthesis.cancel()}catch(e){}}
+function spk(t,rate,el){if(TTS){const g=gen;chain=chain.then(()=>{if(g!==gen)return;if(el)el.classList.add('lit');const v=NV.length?NV[vi%NV.length]:null,o={text:t,lang:v?v.lang:NLANG,rate:rate,pitch:1,volume:1};return Promise.race([TTS.speak(o),new Promise(r=>setTimeout(r,t.length>4?5000:3000))]).catch(e=>toast('Voz: '+((e&&e.message)||e)))}).then(()=>{if(el)el.classList.remove('lit')});return}const u=new SpeechSynthesisUtterance(t);u.lang='es-MX';u.rate=rate;u.pitch=1;u.volume=1;const v=VOICES.length?VOICES[vi%VOICES.length]:null;if(v){u.voice=v;u.lang=v.lang}if(el){u.onstart=()=>el.classList.add('lit');u.onend=u.onerror=()=>el.classList.remove('lit')}_u.push(u);if(_u.length>30)_u.shift();speechSynthesis.speak(u)}
 function say(t,keep,el){try{const go=()=>spk(sp(t),SYL.test(nz(t.toLowerCase()))?.65:.75,el);if(keep)go();else{stopSp();clr();setTimeout(go,80)}}catch(e){}}
 function sayWord(w,box){try{stopSp();clr();box=box||document.querySelector('.pw')||document.querySelector('.slots')||document.querySelector('.big');const ss=box?box.querySelectorAll('.sy'):[];setTimeout(()=>{w.p.forEach((p,i)=>spk(sp(p,1),.9,ss[i]));spk(w.p.join(''),.8,box)},80)}catch(e){}}
 function say_old(t,keep){try{if(!keep)speechSynthesis.cancel();const short=/^(?:[bcdfjlmnprstv]?[aeiou]|gua)$/i.test(t),u=new SpeechSynthesisUtterance(short?t.toLowerCase().replace(/[aeiou](?=[^aeiou]*$)/,c=>({a:'á',e:'é',i:'í',o:'ó',u:'ú'})[c]):t);u.lang='es-MX';u.rate=short?.5:.72;u.pitch=1;u.volume=1;const v=VOICES.length?VOICES[vi%VOICES.length]:null;if(v){u.voice=v;u.lang=v.lang}setTimeout(()=>speechSynthesis.speak(u),keep?0:80)}catch(e){}}
-function nextVoice(){if(VOICES.length){vi=(vi+1)%VOICES.length;const b=$('#vb');if(b)b.textContent='🔊 Voz '+(vi+1)+'/'+VOICES.length}say('Hola, vamos a leer')}
+function nextVoice(){const L=TTS?NV:VOICES;if(L.length){vi=(vi+1)%L.length;const b=$('#vb');if(b)b.textContent='🔊 Voz '+(vi+1)+'/'+L.length}else if(TTS)toast('No encontré voz en español. Instala Servicios de voz de Google en español en Ajustes > Salida de texto a voz.');say('Hola, vamos a leer')}
 function sayWord_old(w){try{speechSynthesis.cancel()}catch(e){}w.p.forEach((p,i)=>setTimeout(()=>say(p,1),i*850));setTimeout(()=>say(w.p.join(''),1),w.p.length*850+250)}
 let ac;function beep(g){try{ac=ac||new(window.AudioContext||webkitAudioContext)();const t=ac.currentTime;(g?[523,659,784]:[240,200]).forEach((f,i)=>{const o=ac.createOscillator(),n=ac.createGain();o.frequency.value=f;o.type='triangle';o.connect(n);n.connect(ac.destination);n.gain.setValueAtTime(.15,t+i*.1);n.gain.exponentialRampToValueAtTime(.001,t+i*.1+.2);o.start(t+i*.1);o.stop(t+i*.1+.22)})}catch(e){}}
 function confetti(){const E=['⭐','🎉','🎈','✨','🌟','🍭'];for(let i=0;i<22;i++){const s=document.createElement('span');s.className='cf';s.textContent=E[i%E.length];s.style.left=Math.random()*95+'vw';s.style.animationDelay=Math.random()*.4+'s';document.body.appendChild(s);setTimeout(()=>s.remove(),2300)}}
@@ -117,7 +132,7 @@ function home(){
   G=null;const tot=Object.values(save).reduce((a,b)=>a+b,0);
   app.innerHTML=`<div class=top><h1>🦉 Silabario Aventura</h1><div style="display:flex;gap:8px;align-items:center"><button class=back id=vb onclick="nextVoice()">🔊 Voz</button><span class=pill>⭐ ${tot}</span></div></div>
   <p class=sub>Toca una letra y ¡vamos a leer!</p>
-  <div class=grid>${LV.map((v,i)=>`<button class=lv style="--c:${v.c}" onclick="learn(${i})" aria-label="Nivel ${v.l}"><b>${v.l}</b><small>${'★'.repeat(save[v.id]||0)}${'☆'.repeat(3-(save[v.id]||0))}</small></button>`).join('')}</div>`;
+  <div class=grid>${LV.map((v,i)=>`<button class=lv style="--c:${v.c}" onclick="learn(${i})" aria-label="Nivel ${v.l}"><b>${v.l}</b><small>${'★'.repeat(save[v.id]||0)}${'☆'.repeat(3-(save[v.id]||0))}</small></button>`).join('')}</div><button class=back onclick="diag()" style="margin-top:18px">🔧 Probar sonido</button>`;
 }
 function learn(i){
   cur=LV[i];if(cur.id=='x')return play();
